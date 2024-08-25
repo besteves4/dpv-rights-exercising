@@ -1,0 +1,28 @@
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX dpv: <https://w3id.org/dpv#>
+PREFIX eu-gdpr: <https://w3id.org/dpv/legal/eu/gdpr#>
+PREFIX justifications: <https://w3id.org/dpv/justifications#>
+PREFIX odrl: <http://www.w3.org/ns/odrl/2/>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+PREFIX ex: <http://example.org/>
+
+<http://example.org/delete-recipient> a odrl:Request ;
+    odrl:uid "5678-9012-3456-7890-1234"^^xsd:string ;
+    dpv:hasRight eu-gdpr:A19 ;
+    dcterms:description "HCP X requires recipient to delete Alice's data." ;
+    odrl:obligation <http://example.org/delete-recipient-notice> .
+
+<http://example.org/delete-recipient-notice> a odrl:Duty ;
+    odrl:action odrl:delete ;
+    odrl:target ex:alice-data ;
+    odrl:assignee ex:recipient ;
+    odrl:assigner ex:HCPx .
+
+<http://example.org/recipient> a dpv:Recipient .
+<http://example.org/alice-data> a dpv:PersonalData ;
+    dpv:hasDataSubject <http://example.org/alice> .
+<http://example.org/HCPx> a dpv:DataController .
+
+# Similar recipes should be used to propagate rectify and restrict requests, see examples in files rectify.ttl and restrict.ttl

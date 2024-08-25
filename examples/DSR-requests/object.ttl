@@ -1,0 +1,72 @@
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX dpv: <https://w3id.org/dpv#>
+PREFIX eu-gdpr: <https://w3id.org/dpv/legal/eu/gdpr#>
+PREFIX justifications: <https://w3id.org/dpv/justifications#>
+PREFIX oac: <https://w3id.org/oac#>
+PREFIX odrl: <http://www.w3.org/ns/odrl/2/>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+PREFIX ex: <http://example.org/>
+
+<http://example.org/alice-object-legalbasis> a odrl:Request ;
+    odrl:profile oac: ;
+    odrl:uid "4321-0987-6543-2109-8765"^^xsd:string ;
+    dpv:hasRight eu-gdpr:A21 ;
+    dcterms:description "Alice requests HCP X to stop processing her data based on legitimate interest." ;
+    odrl:prohibition <http://example.org/object-legalbasis> .
+
+<http://example.org/object-legalbasis> a odrl:Prohibition ;
+    odrl:action odrl:use ;
+    odrl:target ex:alice-data ;
+    odrl:assigner ex:alice ;
+    odrl:assignee ex:HCPx ;
+    odrl:constraint <http://example.org/legalbasis> .
+
+<http://example.org/legalbasis> a odrl:Constraint ;
+    odrl:leftOperand oac:LegalBasis ;
+    odrl:operator odrl:eq ;
+    odrl:rightOperand eu-gdpr:A6-1-f . # Data subject can also object to processing under eu-gdpr:A6-1-e
+
+<http://example.org/alice-object-marketing> a odrl:Request ;
+    odrl:profile oac: ;
+    odrl:uid "8765-4321-0987-6543-2109"^^xsd:string ;
+    dpv:hasRight eu-gdpr:A21 ;
+    dcterms:description "Alice requests HCP X to stop processing her data for direct marketing purposes." ;
+    odrl:prohibition <http://example.org/object-marketing> .
+
+<http://example.org/object-marketing> a odrl:Prohibition ;
+    odrl:action odrl:use ;
+    odrl:target ex:alice-data ;
+    odrl:assigner ex:alice ;
+    odrl:assignee ex:HCPx ;
+    odrl:constraint <http://example.org/purpose> .
+
+<http://example.org/purpose> a odrl:Constraint ;
+    odrl:leftOperand oac:Purpose ;
+    odrl:operator odrl:eq ;
+    odrl:rightOperand dpv:DirectMarketing .
+
+<http://example.org/alice-object-research> a odrl:Request ;
+    odrl:profile oac: ;
+    odrl:uid "2109-8765-4321-0987-6543"^^xsd:string ;
+    dpv:hasRight eu-gdpr:A21 ;
+    dcterms:description "Alice requests HCP X to stop processing her data for scientific or historical research purposes or statistical purposes." ;
+    odrl:prohibition <http://example.org/object-research> .
+
+<http://example.org/object-research> a odrl:Prohibition ;
+    odrl:action odrl:use ;
+    odrl:target ex:alice-data ;
+    odrl:assigner ex:alice ;
+    odrl:assignee ex:HCPx ;
+    odrl:constraint <http://example.org/purpose-research> .
+
+<http://example.org/purpose-research> a odrl:Constraint ;
+    odrl:leftOperand oac:Purpose ;
+    odrl:operator odrl:isAnyOf ;
+    odrl:rightOperand dpv:ProvideOfficialStatistics, dpv:ScientificResearch .
+
+<http://example.org/alice> a dpv:DataSubject .
+<http://example.org/alice-data> a dpv:PersonalData ;
+    dpv:hasDataSubject <http://example.org/alice> .
+<http://example.org/HCPx> a dpv:DataController .

@@ -1,0 +1,42 @@
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX dpv: <https://w3id.org/dpv#>
+PREFIX eu-gdpr: <https://w3id.org/dpv/legal/eu/gdpr#>
+PREFIX odrl: <http://www.w3.org/ns/odrl/2/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+PREFIX ex: <http://example.org/>
+
+<http://example.org/alice-rectify> a odrl:Request ;
+    odrl:uid "7890-1234-5678-9012-3456"^^xsd:string ;
+    dcterms:description "Alice requests HCP X to rectify her data." ;
+    odrl:permission <http://example.org/alice-correct-data> ;
+    odrl:obligation <http://example.org/alice-rectify-recipients> .
+
+<http://example.org/alice-correct-data> a odrl:Permission ;
+    dpv:hasRight eu-gdpr:A16 ;
+    odrl:action odrl:use ;
+    odrl:target ex:alice-data-corrected ;
+    odrl:assigner ex:alice ;
+    odrl:assignee ex:HCPx ;
+    odrl:duty <http://example.org/alice-delete-data> .
+
+<http://example.org/alice-delete-data> a odrl:Duty ;
+    odrl:action odrl:delete ;
+    odrl:target ex:alice-data ;
+    odrl:assigner ex:alice ;
+    odrl:assignee ex:HCPx .
+
+<http://example.org/alice-rectify-recipients> a odrl:Duty ;
+    dpv:hasRight eu-gdpr:A19 ;
+    odrl:action odrl:inform ;
+    odrl:informedParty ex:alice ;
+    odrl:informingParty ex:HCPx ;
+    odrl:target ex:alice-RightsRecipientsNotice .
+
+<http://example.org/alice> a dpv:DataSubject .
+<http://example.org/alice-data> a dpv:PersonalData ;
+    dpv:hasDataSubject <http://example.org/alice> .
+<http://example.org/alice-data-corrected> a dpv:PersonalData ;
+    dpv:hasDataSubject <http://example.org/alice> .
+<http://example.org/HCPx> a dpv:DataController .
+<http://example.org/alice-RightsRecipientsNotice> a eu-gdpr:RightsRecipientsNotice .

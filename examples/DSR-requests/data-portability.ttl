@@ -1,0 +1,54 @@
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX dpv: <https://w3id.org/dpv#>
+PREFIX eu-gdpr: <https://w3id.org/dpv/legal/eu/gdpr#>
+PREFIX odrl: <http://www.w3.org/ns/odrl/2/>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+PREFIX ex: <http://example.org/>
+
+<http://example.org/alice-portability> a odrl:Request ;
+    odrl:uid "0987-6543-2109-8765-4321"^^xsd:string ;
+    dpv:hasRight eu-gdpr:A20 ;
+    dcterms:description "Alice requests HCP X to receive her data in CSV format and for HCP X to transmit it to HCP Y." ;
+    odrl:obligation <http://example.org/receive> ;
+    odrl:obligation <http://example.org/transmit> .
+
+<http://example.org/receive> a odrl:Duty ;
+    odrl:action [
+        rdf:value odrl:reproduce ;
+        odrl:refinement <http://example.org/receive-recipient>, <http://example.org/receive-format>
+    ] ;
+    odrl:target ex:alice-data ;
+    odrl:assigner ex:alice ;
+    odrl:assignee ex:HCPx .
+
+<http://example.org/receive-recipient> a odrl:Constraint ;
+    odrl:leftOperand odrl:recipient ;
+    odrl:operator odrl:eq ;
+    odrl:rightOperand ex:alice .
+
+<http://example.org/receive-format> a odrl:Constraint ;
+    odrl:leftOperand odrl:fileFormat ;
+    odrl:operator odrl:eq ;
+    odrl:rightOperand <https://www.iana.org/assignments/media-types/text/csv> .
+
+<http://example.org/transmit> a odrl:Duty ;
+    odrl:action [
+        rdf:value odrl:reproduce ;
+        odrl:refinement <http://example.org/transmit-recipient>
+    ] ;
+    odrl:target ex:alice-data ;
+    odrl:assigner ex:alice ;
+    odrl:assignee ex:HCPx .
+
+<http://example.org/transmit-recipient> a odrl:Constraint ;
+    odrl:leftOperand odrl:recipient ;
+    odrl:operator odrl:eq ;
+    odrl:rightOperand ex:HCPy .
+
+<http://example.org/alice> a dpv:DataSubject .
+<http://example.org/alice-data> a dpv:PersonalData ;
+    dpv:hasDataSubject <http://example.org/alice> .
+<http://example.org/HCPx> a dpv:DataController .
+<http://example.org/HCPy> a dpv:DataController .
