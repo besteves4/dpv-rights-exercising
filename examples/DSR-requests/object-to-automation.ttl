@@ -26,7 +26,7 @@ PREFIX ex: <http://example.org/>
 <http://example.org/processing-context> a odrl:Constraint ;
     odrl:leftOperand dpv:ProcessingContext ;
     odrl:operator odrl:eq ;
-    odrl:rightOperand dpv:FullAutomation .
+    odrl:rightOperand dpv:AutomatedDecisionMaking .
 
 <http://example.org/alice> a dpv:DataSubject .
 <http://example.org/alice-data> a dpv:PersonalData ;
