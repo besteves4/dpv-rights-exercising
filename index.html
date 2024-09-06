@@ -77,6 +77,10 @@
                     <td class="tg-0lax"><a href="https://example.org/" target="_blank">https://example.org/</a></td>
                 </tr>
                 <tr>
+                    <td class="tg-0lax">foaf</td>
+                    <td class="tg-0lax"><a href="http://xmlns.com/foaf/0.1/" target="_blank">http://xmlns.com/foaf/0.1/</a></td>
+                </tr>
+                <tr>
                     <td class="tg-0lax">justifications</td>
                     <td class="tg-0lax"><a href="https://w3id.org/dpv/justifications#" target="_blank">https://w3id.org/dpv/justifications#</a></td>
                 </tr>
@@ -91,6 +95,10 @@
                 <tr>
                     <td class="tg-0lax">loc</td>
                     <td class="tg-0lax"><a href="https://w3id.org/dpv/loc#" target="_blank">https://w3id.org/dpv/loc#</a></td>
+                </tr>
+                <tr>
+                    <td class="tg-0lax">odrl</td>
+                    <td class="tg-0lax"><a href="http://www.w3.org/ns/odrl/2/" target="_blank">http://www.w3.org/ns/odrl/2/</a></td>
                 </tr>
                 <tr>
                     <td class="tg-0lax">pd</td>
@@ -111,7 +119,7 @@
             </tbody>
         </table>
     </section>
-    
+
     <section id="rights">
         <h2>Associating processes with rights</h2>
         <p>
@@ -150,7 +158,7 @@
                 </pre>
             </div>
         </aside>
-        <aside class="example" id="eu-gb-rights" title="Associate process with applicable rights">
+        <aside class="example" id="eu-gb-rights" title="Associate process with applicable rights from different jurisdictions">
             <p>
                 Example of a process where the data controller uses the data subject's email address
                 for the provision of services based on GDPR consent and indicates the applicable
@@ -176,8 +184,6 @@
                             dpv:hasApplicableLaw legal-gb:law-GDPR, legal-gb:law-DPA ;
                             dpv:hasRight ex:RightOfAccess # not complete, other rights exist
                         ] .
-                    
-                    ex:DataController a dpv:DataController .
 
                     ex:RightOfAccess a dpv:Right ;
                         skos:broader dpv:DataSubjectRight ;
@@ -191,6 +197,224 @@
                 </pre>
             </div>
         </aside>
+    </section>
+
+    <section id="notices">
+        <h2>Notifying rights-related activities</h2>
+        <p>
+            This section outlines how to provide notices related with rights exercising management.
+            Generic <a href="https://w3id.org/dpv#RightNotice" target="_blank">right notices</a>
+            can be provided to indicate which rights exist, when and where they are applicable, and other relevant information.
+            Notices can be associated with specific processes or activities using the 
+            <a href="https://w3id.org/dpv#hasNotice" target="_blank">hasNotice</a> property.
+            <code>dcterms:issued</code> and <code>dcterms:valid</code> can be used to indicate temporal information
+            related to notices, i.e., when it was issued and until when it is valid.
+            The notices should also include information about the data controller as well as the entity implementing the notice,
+            which can be the data controller or another entity acting on behalf of the data controller,
+            using <code>dpv:hasDataController</code> and <code>dpv:isImplementedByEntity</code>, respectively.
+            <code>foaf:page</code> can be used to indicate a document, e.g., Webpage, containing the contents of the
+            notice and further functionalities.
+        </p>
+        <aside class="example" id="right-notice" title="Notice with applicable rights">
+            <p>
+                Example of a notice that details the applicable rights under EU's GDPR, <code>issued</code> on 
+                December 1st, 2024, and <code>valid</code> until December 31st, 2024.
+                The notice has information about the data controller as well as the entity implementing it.
+                The webpage available at <code>https://example.org/DataController/RightNotice</code>
+                can be consulted for a human-readable version of the notice. 
+            </p>
+            <div>
+                <pre class="nohighlight">
+                    ex:RightNotice a dpv:RightNotice ;
+                        dcterms:description "Rights notice of data controller, valid until the end of December 2024"^^xsd:string ;
+                        dcterms:issued "2024-01-01"^^xsd:date ;
+                        dcterms:valid "2024-12-31"^^xsd:date ;
+                        dpv:hasDataController ex:DataController ;
+                        dpv:isImplementedByEntity ex:DataController ;
+                        dpv:hasApplicableLaw legal-eu:law-GDPR ;
+                        dpv:hasRight eu-gdpr:A7-3, eu-gdpr:A13, eu-gdpr:A14, eu-gdpr:A15, eu-gdpr:A16, 
+                            eu-gdpr:A17, eu-gdpr:A18, eu-gdpr:A20, eu-gdpr:A22, eu-gdpr:A77 ;
+                        foaf:page &#60;https://example.org/DataController/RightNotice> .
+                </pre>
+            </div>
+        </aside>
+        <p>
+            <a href="https://w3id.org/dpv#RightExerciseNotice" target="_blank">Right exercise notices</a>
+            should be used to notify data subjects on where and how to exercise an active right,
+            which information is required, or to provide updates on an exercised right request.
+            Beyond the previously mentioned properties,
+            DPV's <a href="https://w3id.org/dpv#isExercisedAt" target="_blank">isExercisedAt</a> property
+            can be used to associate rights with specific right exercise points, i.e., through right exercise notices,
+            and information required to exercise a right through the association with a process, using 
+            DPV's <a href="https://w3id.org/dpv#hasProcess" target="_blank">hasProcess</a> property.
+            The <a href="https://w3id.org/dpv#hasRecipient" target="_blank">hasRecipient</a>, 
+            <a href="https://w3id.org/dpv#hasStatus" target="_blank">hasStatus</a>, and
+            <a href="https://w3id.org/dpv#hasJustification" target="_blank">hasJustification</a>
+            properties can be used to provide updates to the data subject on the status of a specific right exercising
+            activity, including a justification to why such right is being exercised.
+        </p>
+        <aside class="example" id="exercise-notice" title="Right exercise notice with information to be provided by the data subject">
+            <p>
+                Example of a rights exercise notice that details the rights, under EU's GDPR, that can be exercised
+                at <code>https://example.org/DataController/RightExercisePoint</code>.
+                To exercise such rights, the data subject's account identifier needs to be provided to the data controller
+                to collect and store, for the purpose of identity verification.
+            </p>
+            <div>
+                <pre class="nohighlight">
+                    ex:RightExercisePoint a dpv:RightExerciseNotice ;
+                        dcterms:description "Exercise notice of data controller, valid until the end of December 2024"^^xsd:string ;
+                        dcterms:issued "2024-01-01"^^xsd:date ;
+                        dcterms:valid "2024-12-31"^^xsd:date ;
+                        dpv:hasRight eu-gdpr:A7-3, eu-gdpr:A15, eu-gdpr:A16, eu-gdpr:A17, eu-gdpr:A20 ;
+                        dpv:hasDataController ex:DataController ;
+                        dpv:isImplementedByEntity ex:DataController ;
+                        foaf:page &#60;https://example.org/DataController/RightExercisePoint> ;
+                        dpv:hasProcess [
+                            dpv:hasPurpose dpv:IdentityVerification ;
+                            dpv:hasPersonalData pd:AccountIdentifier ;
+                            dpv:hasProcessing dpv:Collect, dpv:Store ;
+                            dpv:hasRecipientDataController ex:DataController ] .
+
+                    # Associating specific rights with specific exercise notices
+                    ex:RightToDelete a eu-gdpr:A17 ;
+                        dpv:isExercisedAt ex:RightExercisePoint .
+                </pre>
+            </div>
+        </aside>
+        <aside class="example" id="exercise-update" title="Providing an update on an exercised right to delete">
+            <p>
+                Example of a right exercise update notice that contains the status of the exercised right, 
+                that can be consulted in human-readable format at <code>https://example.org/DataController/UpdateRightToDelete</code>.
+                The justification used by the data subject to initiate the request to delete is based on
+                the data processing not being necessary.
+            </p>
+            <div>
+                <pre class="nohighlight">
+                    ex:UpdateRightToDelete a dpv:RightExerciseNotice ;
+                        dcterms:description "Exercise notice update provided to the data subject"^^xsd:string ;
+                        dcterms:issued "2024-08-24"^^xsd:date ;
+                        dpv:hasRight ex:RightToDelete ;
+                        dpv:hasDataController ex:DataController ;
+                        dpv:isImplementedByEntity ex:DataController ;
+                        foaf:page &#60;https://example.org/DataController/UpdateRightToDelete> ;
+                        dpv:hasRecipient ex:DataSubject ;
+                        dpv:hasStatus dpv:RequestInitiated ;
+                        dpv:hasJustification justifications:NonNecessityObjection .
+                    
+                    ex:DataSubject a dpv:DataSubject .
+                </pre>
+            </div>
+        </aside>
+        <p>
+            Specific notices to inform of the 
+            <a href="https://w3id.org/dpv#RightFulfilmentNotice" target="_blank">fulfilment</a>, 
+            <a href="https://w3id.org/dpv#RightFulfilmentNotice" target="_blank">towards fulfilment</a> or about the 
+            <a href="https://w3id.org/dpv#RightNonFulfilmentNotice" target="_blank">non-fulfilment</a> 
+            of a right are also provided.
+        </p>
+        <p>
+            Required actions that need to be performed by entities towards the fulfilment of a certain rights-related
+            request, that cannot be sufficiently detailed using DPV, e.g., issuance of payment terms, can be attached
+            to notices using policy languages such as 
+            <a href="https://www.w3.org/TR/odrl-model/" target="_blank">Open Digital Rights Language (ODRL)</a>.
+        </p>
+        <aside class="example" id="fulfillment-notice" title="Notice of fulfillment related to an exercised right to delete">
+            <p>
+                Example of a notice of fulfillment related to an exercised right to delete, 
+                that can be consulted in human-readable format at <code>https://example.org/DataController/FulfilRightToDelete</code>.
+            </p>
+            <div>
+                <pre class="nohighlight">
+                    ex:FulfilRightToDelete a dpv:RightFulfilmentNotice ;
+                        dcterms:description "Notice of fulfillment related to the exercised right to delete"^^xsd:string ;
+                        dcterms:issued "2024-08-27"^^xsd:date ;
+                        dpv:hasRight ex:RightToDelete ;
+                        dpv:hasDataController ex:DataController ;
+                        dpv:isImplementedByEntity ex:DataController ;
+                        foaf:page &#60;https://example.org/DataController/FulfilRightToDelete> ;
+                        dpv:hasRecipient ex:DataSubject ;
+                        dpv:hasStatus dpv:RequestFulfilled .
+                </pre>
+            </div>
+        </aside>
+        <aside class="example" id="towards-fulfillment" title="Notice of required action towards the fulfillment of an exercised right to delete">
+            <p>
+                Example of a notice with information towards the fulfillment of an exercised right to delete, 
+                that can be consulted in human-readable format at <code>https://example.org/DataController/PaymentRightToDelete</code>.
+                In this case, the data controller requires the data subject to make a payment as the data subject's
+                request as been deemed excessive by the data controller.
+                The terms of the payment are described in the ODRL policy identified in
+                <code>https://example.org/DataController/PaymentRightToDelete/terms></code>.
+            </p>
+            <div>
+                <pre class="nohighlight">
+                    ex:PaymentRightToDelete a dpv:RightFulfilmentNotice ;
+                        dcterms:description "Notice of needed payment towards the fulfillment of the exercised right to delete"^^xsd:string ;
+                        dcterms:issued "2024-08-29"^^xsd:date ;
+                        dpv:hasRight ex:RightToDelete ;
+                        dpv:hasDataController ex:DataController ;
+                        dpv:isImplementedByEntity ex:DataController ;
+                        foaf:page &#60;https://example.org/DataController/PaymentRightToDelete> ;
+                        dpv:hasRecipient ex:DataSubject ;
+                        dpv:hasStatus dpv:RequestRequiresAction ;
+                        dpv:hasJustification justifications:ProcessExcessive ;
+                        odrl:hasPolicy ex:PaymentRequired .
+                    
+                    ex:PaymentRequired a odrl:Policy ;
+                        odrl:uid &#60;https://example.org/DataController/PaymentRightToDelete/terms>
+                        odrl:obligation [
+                            odrl:assigner ex:DataController ;
+                            odrl:assignee ex:DataSubject ;
+                            odrl:action [
+                                rdf:value odrl:compensate ;
+                                odrl:refinement [
+                                    odrl:leftOperand odrl:payAmount ;
+                                    odrl:operator odrl:eq ;
+                                    odrl:rightOperand "100.00"^^xsd:decimal ;
+                                    odrl:unit &#60;http://dbpedia.org/resource/Euro>
+                                ]
+                            ]
+                        ] .
+                </pre>
+            </div>
+        </aside>
+        <aside class="example" id="nonfulfillment-notice" title="Notice of non-fulfillment related to an exercised right to delete">
+            <p>
+                Example of a notice of non-fulfillment related to an exercised right to delete, 
+                that can be consulted in human-readable format at <code>https://example.org/DataController/RejectRightToDelete</code>.
+                The request will not be fulfilled since it would interfere with the right of freedom of expression and information 
+                of others, as indicated by the <code>FreedomOfExpressionImpaired</code> justification.
+            </p>
+            <div>
+                <pre class="nohighlight">
+                    ex:RejectRightToDelete a dpv:RightNonFulfilmentNotice ;
+                        dcterms:description "Notice of non-fulfillment related to an exercised right to delete"^^xsd:string ;
+                        dcterms:issued "2024-09-06"^^xsd:date ;
+                        dpv:hasRight ex:RightToDelete ;
+                        dpv:hasDataController ex:DataController ;
+                        dpv:isImplementedByEntity ex:DataController ;
+                        foaf:page &#60;https://example.org/DataController/RejectRightToDelete> ;
+                        dpv:hasRecipient ex:DataSubject ;
+                        dpv:hasStatus dpv:RequestUnfulfilled ;
+                        dpv:hasJustification justifications:FreedomOfExpressionImpaired .
+                </pre>
+            </div>
+        </aside>
+        <p>
+            For GDPR-specific notices, the 
+            <a href="https://w3id.org/dpv/legal/eu/gdpr" target="_blank">EU GDPR extension</a> 
+            provides concepts for 
+            <a href="https://w3id.org/dpv/legal/eu/gdpr#DirectDataCollectionNotice" target="_blank">direct</a> and 
+            <a href="https://w3id.org/dpv/legal/eu/gdpr#IndirectDataCollectionNotice" target="_blank">indirect</a>
+            data collection notices, required by GDPR's Articles 13 and 14, respectively, 
+            <a href="https://w3id.org/dpv/legal/eu/gdpr#SARNotice" target="_blank">Subject Access Request (SAR) notices</a>
+            to fulfil GDPR Right of Access, and
+            <a href="https://w3id.org/dpv/legal/eu/gdpr#RightsRecipientsNotice" target="_blank">recipient notices</a>
+            to fulfil GDPR's Art.19 notification requirements, regarding the recipients to whom a rights exercise 
+            has been communicated, such as the right to rectification (Art.16), right to erasure (Art.17) or right to restriction 
+            of processing (Art.18).
+        </p>
     </section>
 
     <section id="automating-odrl">
