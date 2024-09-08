@@ -113,13 +113,17 @@
                     <td class="tg-0lax"><a href="http://www.w3.org/2004/02/skos/core#" target="_blank">http://www.w3.org/2004/02/skos/core#</a></td>
                 </tr>
                 <tr>
+                    <td class="tg-0lax">time</td>
+                    <td class="tg-0lax"><a href="http://www.w3.org/2006/time#" target="_blank">http://www.w3.org/2006/time#</a></td>
+                </tr>
+                <tr>
                     <td class="tg-0lax">xsd</td>
                     <td class="tg-0lax"><a href="http://www.w3.org/2001/XMLSchema#" target="_blank">http://www.w3.org/2001/XMLSchema#</a></td>
                 </tr>
             </tbody>
         </table>
     </section>
-
+    
     <section id="rights">
         <h2>Associating processes with rights</h2>
         <p>
@@ -312,12 +316,13 @@
             <a href="https://w3id.org/dpv#RightFulfilmentNotice" target="_blank">towards fulfilment</a> or about the 
             <a href="https://w3id.org/dpv#RightNonFulfilmentNotice" target="_blank">non-fulfilment</a> 
             of a right are also provided.
-        </p>
-        <p>
             Required actions that need to be performed by entities towards the fulfilment of a certain rights-related
             request, that cannot be sufficiently detailed using DPV, e.g., issuance of payment terms, can be attached
             to notices using policy languages such as 
             <a href="https://www.w3.org/TR/odrl-model/" target="_blank">Open Digital Rights Language (ODRL)</a>.
+            The period of time the entities have to execute the required actions can also be expressed using ODRL
+            constraints and/or can be included in the notices using DPV's
+            <a href="https://w3id.org/dpv#Duration" target="_blank">Duration</a> concepts.
         </p>
         <aside class="example" id="fulfillment-notice" title="Notice of fulfillment related to an exercised right to delete">
             <p>
@@ -374,6 +379,11 @@
                                     odrl:rightOperand "100.00"^^xsd:decimal ;
                                     odrl:unit &#60;http://dbpedia.org/resource/Euro>
                                 ]
+                            ] ;
+                            odrl:constraint [
+                                odrl:leftOperand odrl:elapsedTime ;
+                                odrl:operator odrl:eq ;
+                                odrl:rightOperand "P14D"^^xsd:duration
                             ]
                         ] .
                 </pre>
@@ -415,6 +425,154 @@
             has been communicated, such as the right to rectification (Art.16), right to erasure (Art.17) or right to restriction 
             of processing (Art.18).
         </p>
+        <p>
+            In the case of GDPR's Articles 13 and 14, the data subject should be notified of the identity and contacts of the 
+            data controller and of the controller's representative if applicable, as well as receive notice of the contact details 
+            of the controller's data protection officer. The notice should also include the purposes and legal basis for data 
+            processing, and, in case such basis is the legitimate interests pursued by the controller or by a third party, said
+            interests should be specified. Data subjects should also be made aware of any recipients or categories of recipients
+            of the personal data, and, if applicable, about transfers of personal data to a third country or international 
+            organisation, including the existence or absence of an adequacy decision for said country and applicable safeguards.
+            Furthermore, data subjects should be notified with regards to the data storage period, as well as their existing rights,
+            namely the rights to withdraw consent and to lodge a complaint and the rights of access, rectification, erasure, 
+            restriction of processing, object and data portability.
+            In case the provision of personal data is necessary for statutory or contractual obligations or there is automated 
+            decision-making, it should also be disclosed to the data subject.
+            Beyond the previously mentioned information, GDPR's Article 14 also requires the data subject to be notified about
+            processed categories of data and their respective sources.
+        </p>
+        <div class="note" title="Connection with privacy notices">
+            How does it related with the ISO/IEC 29184 Privacy Notice standard? Also see issue at
+            <a href="https://github.com/w3c/dpv/issues/91" target="_blank">https://github.com/w3c/dpv/issues/91</a>.
+        </div>
+        <p>
+            In the case of the SAR notice, a DPV process can be used to notify the data subject about the type of personal data 
+            being processed, the purpose for the processing, and to which recipients it was disclosed.
+            The storage period of the data is also indicated, as well as the existence of other data subject rights 
+            and the source of the data if not collected from the data subject.
+            In case there is automated decision-making, it should also be disclosed to the data subject.
+        </p>
+        <div class="issue" title="What constitutes a valid legitimate interest?">
+            Is there a list of legitimate interests validated by authorities/case law?
+        </div>
+        <div class="issue" title="Modelling of categories of recipients">
+            According to GDPR's Articles 13, 14, and 15, in the case data is shared with any recipients, these can be notified to the
+            data subject by their category type instead of naming each recipient individually. DPV currently does not have 
+            such a taxonomy. Can we reuse an existent one or should we define one in DPV itself?
+        </div>
+        <div class="issue" title="Modelling of information related to automated decision-making and logic involved">
+            According to GDPR's Articles 13, 14, and 15, in the case of the existence of automated decision-making, 
+            including profiling, the data subject must be informed about it when exercising its right of access.
+            While DPV already includes concepts to model automation and decision-making, work still needs to be done to 
+            come up with a model to represent information <i>"about the logic involved, as well as the significance and 
+            the envisaged consequences of such processing for the data subject"</i>.
+        </div>
+        <aside class="example" id="collection-notice" title="Notice of direct data collection related to GDPR's Article 13">
+            <p>
+                Example of a notice of direct data collection related to GDPR's Article 13, that can be consulted 
+                in human-readable format at <code>https://example.org/DataController/DataCollection</code>.
+                Identity and contact details of the data controller and its representative and DPO are provided.
+                The collected data was used for <code>ServiceProvision</code>, under GDPR's Article 6.1(a) legal basis, 
+                and it was disclosed to <code>CompanyX</code>, <code>CompanyY</code>, and <code>CompanyZ</code>.
+                The data was collected from the data subject, from January 1st, 2023 to December 31st, 2023.
+            </p>
+            <div>
+                <pre class="nohighlight">
+                    ex:DataCollection_Notice a eu-gdpr:DirectDataCollectionNotice ;
+                        dcterms:description "Notice of direct data collection related to GDPR's Article 13"^^xsd:string ;
+                        dcterms:issued "2024-08-01"^^xsd:date ;
+                        dpv:hasRight eu-gdpr:A13 ;
+                        dpv:hasDataController ex:DataController ;
+                        dpv:isImplementedByEntity ex:DataController ;
+                        foaf:page &#60;https://example.org/DataController/DataCollection> ;
+                        dpv:hasRecipient ex:DataSubject ;
+                        dpv:hasProcess [
+                            dpv:hasPurpose dpv:ServiceProvision ;
+                            dpv:hasLegalBasis eu-gdpr:A6-1-a ;
+                            dpv:hasRecipient ex:CompanyX, ex:CompanyY, ex:CompanyZ ;
+                            dpv:hasDuration [
+                                time:hasBeginning "2023-01-01"^^xsd:date ;
+                                time:hasEnd "2023-12-31"^^xsd:date
+                            ] ;
+                            dpv:hasRight A7-3, eu-gdpr:A15, eu-gdpr:A16, eu-gdpr:A17, eu-gdpr:A18, 
+                                eu-gdpr:A20, eu-gdpr:A21, eu-gdpr:A77 ;
+
+                            # In case it is an dpv:IndirectDataCollectionNotice data type and source should also be present
+                            dpv:hasDataSource dpv:ThirdPartyDataSource ;
+                            dpv:hasPersonalData pd:EmailAddress
+                        ] .
+
+                    ex:DataController a dpv:DataController ;
+                        dpv:hasName "Data Controller Y"^^xsd:string ;
+                        dpv:hasAddress "Address of Data Controller Y"^^xsd:string ;
+                        dpv:hasContact "mailto:datacontrollery@mail.com"^^xsd:string ;
+                        dpv:hasRepresentative ex:DataControllerRep ;
+                        dpv:hasDataProtectionOfficer ex:DataControllerDPO .
+                </pre>
+            </div>
+        </aside>
+        <aside class="example" id="SAR-notice" title="Notice of fulfillment related to GDPR's Right of Access">
+            <p>
+                Example of a notice of fulfillment related to an exercised GDPR's Right of Access, that can be consulted 
+                in human-readable format at <code>https://example.org/DataController/SARFulfilled_Notice</code>.
+                <code>EmailAddress</code> was used for <code>ServiceProvision</code> and it was disclosed to <code>CompanyX</code>.
+                The data was sourced from the data subject and collected from January 1st, 2022 to December 31st, 2022.
+            </p>
+            <div>
+                <pre class="nohighlight">
+                    ex:SARFulfilled_Notice a eu-gdpr:SARNotice ;
+                        dcterms:description "Notice of fulfillment related to GDPR's Right of Access"^^xsd:string ;
+                        dcterms:issued "2024-08-07"^^xsd:date ;
+                        dpv:hasRight eu-gdpr:A15 ;
+                        dpv:hasDataController ex:DataController ;
+                        dpv:isImplementedByEntity ex:DataController ;
+                        foaf:page &#60;https://example.org/DataController/SARFulfilled_Notice> ;
+                        dpv:hasRecipient ex:DataSubject ;
+                        dpv:hasStatus dpv:RequestFulfilled ;
+                        dpv:hasProcess [
+                            dpv:hasPurpose dpv:ServiceProvision ;
+                            dpv:hasPersonalData pd:EmailAddress ;
+                            dpv:hasRecipient ex:CompanyX ;
+                            dpv:hasDuration [
+                                time:hasBeginning "2022-01-01"^^xsd:date ;
+                                time:hasEnd "2022-12-31"^^xsd:date
+                            ] ;
+                            dpv:hasRight eu-gdpr:A16, eu-gdpr:A17, eu-gdpr:A18, eu-gdpr:A21, eu-gdpr:A77 ;
+                            dpv:hasDataSource dpv:DataSubjectDataSource
+                        ] .
+                </pre>
+            </div>
+        </aside>
+        <aside class="example" id="recipients-notice" title="Notice of recipients to whom an exercised right to erasure was communicated">
+            <p>
+                Example of a notice of recipients to whom an exercised right to erasure was communicated, that can be consulted 
+                in human-readable format at <code>https://example.org/DataController/Recipients_Notice</code>.
+                <code>dpv:hasProcess</code> is used to effectively communicate which right was exercised by the data subject receiving the notice - 
+                <code>eu-gdpr:A17</code> in the example - and the recipients to whom the personal data have been disclosed - 
+                <code>ex:CompanyX, ex:CompanyY, ex:CompanyZ</code> in the example.
+            </p>
+            <div>
+                <pre class="nohighlight">
+                    ex:Recipients_Notice a eu-gdpr:RightsRecipientsNotice ;
+                        dcterms:description "Notice of recipients to whom an exercised right to erasure was communicated"^^xsd:string ;
+                        dcterms:issued "2024-08-08"^^xsd:date ;
+                        dpv:hasRight eu-gdpr:A19 ;
+                        dpv:hasRecipient ex:DataSubject ;
+                        dpv:hasDataController ex:DataController ;
+                        dpv:isImplementedByEntity ex:DataController ;
+                        foaf:page &#60;https://example.org/DataController/Recipients_Notice> ;
+                        dpv:hasProcess [
+                            dpv:hasRight eu-gdpr:A17 ;
+                            dpv:hasRecipient ex:CompanyX, ex:CompanyY, ex:CompanyZ
+                        ] .
+                    
+                    ex:CompanyX a dpv:Recipient ;
+                        dpv:hasName "Company X"^^xsd:string ;
+                        dpv:hasAddress "Address of Company X"^^xsd:string ;
+                        dpv:hasContact "mailto:companyy@mail.com"^^xsd:string .
+                </pre>
+            </div>
+        </aside>
     </section>
 
     <section id="automating-odrl">
