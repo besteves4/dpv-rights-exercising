@@ -41,14 +41,13 @@
     <section id="overview">
         <h2>Overview</h2>
         <p>
-            This document outlines the identified requirements for the expression of information related to the 
-            exercising of data subject rights.
-            In particular, the main objectives include expressing information about
+            This document provides guidelines and examples to express information about
         </p>
         <ul>
-            <li>what rights exist (in particular within the framework of the GDPR)</li>
-            <li>where such rights can be exercised</li>
-            <li>what information needs to be recorded and maintained when a concrete instance of a right is being/was exercised</li>
+            <li>associating personal data processes with applicable rights</li>
+            <li>notifying rights-related activities</li>
+            <li>recording rights being exercised</li>
+            <li>automating the execution of GDPR-related rights requests with policies</li>
         </ul>
 
         <h3>Namespaces</h3>
@@ -99,6 +98,10 @@
                 <tr>
                     <td class="tg-0lax">loc</td>
                     <td class="tg-0lax"><a href="https://w3id.org/dpv/loc#" target="_blank">https://w3id.org/dpv/loc#</a></td>
+                </tr>
+                <tr>
+                    <td class="tg-0lax">oac</td>
+                    <td class="tg-0lax"><a href="https://w3id.org/oac#" target="_blank">https://w3id.org/oac#</a></td>
                 </tr>
                 <tr>
                     <td class="tg-0lax">odrl</td>
@@ -603,7 +606,7 @@
             entities, to track the provenance of a particular right exercising process, from the request itself to
             its acknowledgement by the data controller and to the fulfilment or non-fulfilment of the right.
             For easy record-keeping, each activity should be modelled as a
-            A <a href="https://w3id.org/dpv#RightExerciseActivity" target="_blank">RightExerciseActivity</a> instance,
+            <a href="https://w3id.org/dpv#RightExerciseActivity" target="_blank">RightExerciseActivity</a> instance,
             which can be connected with other instances using DPV's
             <a href="https://w3id.org/dpv#isBefore" target="_blank">isBefore</a> and
             <a href="https://w3id.org/dpv#isAfter" target="_blank">isAfter</a> concepts.
@@ -908,47 +911,614 @@
             with corresponding activities exercised by entities towards the fulfilment or non-fulfilment of such requests,
             e.g., using the <a href="http://purl.org/dc/terms/hasPart" target="_blank">dcterms:hasPart</a> property.
         </p>
-    </section>
-
-    <section id="execution-odrl">
-        <h2>Automating the execution of rights requests with DPV and ODRL</h2>
-        <p>
-            This section outlines how to use DPV and the Open Digital Rights Language (ODRL) 
-            for data subjects to send right requests in a machine-exercisable format to data controllers, 
-            which can integrate an automated response in their rights management processes 
-            to easily reply to data subjects.
-        </p>
-        <div class="note" title="Machine-readable requests to execute rights">
-            See related issue at
-            <a href="https://github.com/w3c/dpv/issues/4" target="_blank">https://github.com/w3c/dpv/issues/4</a>.
-        </div>
-        <aside class="example" id="process" title="Request rejected due to identity verification failure">
+        <aside class="example" id="record" title="Record maintained by the data controller for a GDPR Right of Access request">
             <p>
-                Follow-up right exercise activity where the data controller requests further information
-                to verify the data subject's identity, using as justification that before, with the information
-                they had available, it was not possible to do so.
+                Example of a right exercise record related to a GDPR Right of Access request, which was already fulfilled,
+                as represented by the <code>dpv:RequestFulfilled</code> status. The activities performed for the fulfilment of 
+                the right are all connected with the record using the <code>dcterms:hasPart</code> property.
             </p>
             <div>
                 <pre class="nohighlight">
-                    ex:ProcessEmailForServiceProvision a dpv:Process ;
+                    ex:SAR-DS-record a dpv:RightExerciseRecord ;
+                        dcterms:description "Record maintained by the data controller for a GDPR Right of Access request" ;
+                        dcterms:created "2023-11-02T11:08:05"^^xsd:dateTime ;
+                        dcterms:modified "2023-11-03T08:37:25"^^xsd:dateTime ;
                         dpv:hasDataController ex:DataController ;
-                        dpv:hasPersonalData pd:EmailAddress ;
-                        dpv:hasProcessing dpv:Use ;
-                        dpv:hasPurpose dpv:ServiceProvision ;
-                        dpv:hasLegalBasis eu-gdpr:A6-1-a ;
-                        dpv:hasRight eu-gdpr:A7-3, eu-gdpr:A13, eu-gdpr:A14, eu-gdpr:A15, eu-gdpr:A16, 
-                            eu-gdpr:A17, eu-gdpr:A18, eu-gdpr:A20, eu-gdpr:A22, eu-gdpr:A77 .
+                        dpv:hasDataSubject ex:DataSubject ;
+                        dpv:hasRight eu-gdpr:A15 ;
+                        dpv:hasStatus dpv:RequestFulfilled ;
+                        dcterms:hasPart ex:SARequest, ex:SARAcknowledged, ex:SARRejected, ex:SARRequiresAction, ex:SARActionDelayed,
+                            ex:SARActionPerformed, ex:SARAccepted, ex:SARFulfilled .
+                </pre>
+            </div>
+        </aside>
+        <aside class="example" id="record-multiple" title="Record maintained by the data controller for the data subject's rights-related requests">
+            <p>
+                Example of a right exercise record maintained by the data controller for all the data subject's rights-related 
+                requests. Distinct recorded requests are connected by the <code>dcterms:hasPart</code> property to the main record
+                maintained by the data controller for that particular data subject. Each individual request is then modelled as a 
+                separate record related to a particular right request, which uses DPV's <code>hasRight</code> and 
+                <code>hasStatus</code> to establish the right being exercised and to maintain the status of the request - in this case
+                <code>ex:request-1</code> has already been fulfilled, while <code>ex:request-2</code> has as its latest status being
+                acknowledged by the data controller. The activities performed for the fulfilment of the right are all connected with 
+                the record using the <code>dcterms:hasPart</code> property.
+            </p>
+            <div>
+                <pre class="nohighlight">
+                    ex:DS-record a dpv:RightExerciseRecord ;
+                        dcterms:description "Record maintained by the data controller for the data subject's rights-related requests" ;
+                        dcterms:created "2023-10-23T08:37:25"^^xsd:dateTime ;
+                        dcterms:modified "2023-11-03T08:37:25"^^xsd:dateTime ;
+                        dpv:hasDataController ex:DataController ;
+                        dpv:hasDataSubject ex:DataSubject ;
+                        dcterms:hasPart ex:request-1, ex-request-2 .
                     
-                    ex:DataController a dpv:DataController .
+                    ex:request-1 a dpv:RightExerciseRecord ;
+                        dcterms:description "Record maintained by the data controller for a GDPR Right of Access request" ;
+                        dcterms:created "2023-10-23T08:37:25"^^xsd:dateTime ;
+                        dcterms:modified "2023-10-25T08:37:25"^^xsd:dateTime ;
+                        dpv:hasDataController ex:DataController ;
+                        dpv:hasDataSubject ex:DataSubject ;
+                        dpv:hasRight eu-gdpr:A15 ;
+                        dpv:hasStatus dpv:RequestFulfilled ;
+                        dcterms:hasPart ex:SARequest, ex:SARAcknowledged, ex:SARRejected, ex:SARRequiresAction, ex:SARActionDelayed,
+                            ex:SARActionPerformed, ex:SARAccepted, ex:SARFulfilled .
 
-                    ex:RightNotice a dpv:RightNotice ;
-                        dcterms:description "Data subject rights according to an applicable law." ;
-                        dcterms:date "2024-08-31T10:27:50"^^xsd:dateTime ;
-                        dpv:hasRight [
-                            a dpv:DataSubjectRight ;
-                            dpv:hasApplicableLaw ex:Law ;
-                            dcterms:description "Right to be informed about personal data processing" ;
-                        ] .
+                    ex:request-2 a dpv:RightExerciseRecord ;
+                        dcterms:description "Record maintained by the data controller for a GDPR Right of data portability" ;
+                        dcterms:created "2023-11-02T18:36:14"^^xsd:dateTime ;
+                        dcterms:modified "2023-11-03T08:37:25"^^xsd:dateTime ;
+                        dpv:hasDataController ex:DataController ;
+                        dpv:hasDataSubject ex:DataSubject ;
+                        dpv:hasRight eu-gdpr:A20 ;
+                        dpv:hasStatus dpv:RequestAcknowledged ;
+                        dcterms:hasPart ex:portabilityRequest, ex:portabilityAcknowledged .
+                </pre>
+            </div>
+        </aside>
+        <p>
+            For integration with <a href="https://www.w3.org/TR/vocab-dcat-3/" target="_blank">DCAT</a>-based systems, right 
+            exercise records can also adapt DCAT's standard to represent data catalogs - a right exercise record can also be 
+            modelled as a <a href="http://www.w3.org/ns/dcat#Catalog" target="_blank">dcat:Catalog</a> and right exercise activities 
+            as <a href="http://www.w3.org/ns/dcat#Resource" target="_blank">dcat:Resource</a>s, which can be bundled and ordered 
+            using <a href="http://www.w3.org/ns/dcat#DatasetSeries" target="_blank">dcat:DatasetSeries</a>.
+            This also brings the advantage of using DCAT's ordering properties, i.e., 
+            <a href="http://www.w3.org/ns/dcat#first" target="_blank">dcat:first</a>, 
+            <a href="http://www.w3.org/ns/dcat#last" target="_blank">dcat:last</a>, and
+            <a href="http://www.w3.org/ns/dcat#prev" target="_blank">dcat:prev</a>, 
+            to retrieve the latest activity related to a particular rights-related request.
+        </p>
+        <aside class="example" id="record-dcat" title="Record maintained by the data controller for the data subject's rights-related requests using DCAT">
+            <p>
+                Example of a right exercise record maintained by the data controller for all the data subject's rights-related 
+                requests. A catalog record is maintained to describe metadata about the right exercise record, including
+                the involved data controller and data subject. As it stands, the data subject has opened two requests,
+                <code>ex:request-001</code> and <code>ex-request-002</code>. The right exercising activities pertaining to these
+                requests are collected and ordered in <code>ex:request-001-series</code> and <code>ex:request-002-series</code>, 
+                respectively. As such, the <code>dcat:last</code> property can be used to retrieve the latest activity of each
+                request.
+            </p>
+            <div>
+                <pre class="nohighlight">
+                    ex:catalog-001 a dpv:RightExerciseRecord, dcat:Catalog ;
+                        dcterms:description "Record maintained by the data controller for the data subject's rights-related requests" ;
+                        dcterms:publisher ex:DataController ;
+                        dcterms:created "2023-10-23T08:37:25"^^xsd:dateTime ;
+                        dcterms:modified "2023-11-03T08:37:25"^^xsd:dateTime ;
+                        dcat:record ex:DS-record ;
+                        dcat:catalog ex:request-001, ex-request-002 .
+
+                    ex:record-001 a dcat:CatalogRecord ;
+                        dcterms:description "Metadata about catalog-001" ;
+                        foaf:primaryTopic ex:DataSubject ;
+                        dcterms:publisher ex:DataController ;
+                        dpv:hasDataController ex:DataController ;
+                        dpv:hasDataSubject ex:DataSubject ;
+                        dcterms:issued "2023-10-23T08:37:25"^^xsd:dateTime .
+                    
+                    ex:request-001 a dpv:RightExerciseRecord, dcat:Catalog ;
+                        dcterms:description "Record maintained by the data controller for a GDPR Right of Access request" ;
+                        dcterms:created "2023-10-23T08:37:25"^^xsd:dateTime ;
+                        dcterms:modified "2023-10-25T08:37:25"^^xsd:dateTime ;
+                        dpv:hasRight eu-gdpr:A15 ;
+                        dpv:hasStatus dpv:RequestFulfilled ;
+                        dcat:resource ex:SARequest, ex:SARAcknowledged, ex:SARRejected, ex:SARRequiresAction, ex:SARActionDelayed,
+                            ex:SARActionPerformed, ex:SARAccepted, ex:SARFulfilled .
+
+                    ex:request-001-series a dcat:DatasetSeries ;
+                        dcat:first ex:SARequest ;
+                        dcat:last ex:SARFulfilled .
+
+                    ex:SARequest a dpv:RightExerciseActivity, dcat:Resource ;
+                        dcat:inSeries ex:request-001-series ;
+                        # further data is modelled as in the examples in Section 3 .
+
+                    ex:SARAcknowledged a dpv:RightExerciseActivity, dcat:Resource ;
+                        dcat:inSeries ex:request-001-series ;
+                        dcat:prev  ex:SARequest .
+
+                    # Other dcat:Resource in the series have the same structure
+
+                    ex:request-002 a dpv:RightExerciseRecord ;
+                        dcterms:description "Record maintained by the data controller for a GDPR Right of data portability" ;
+                        dcterms:created "2023-11-02T18:36:14"^^xsd:dateTime ;
+                        dcterms:modified "2023-11-03T08:37:25"^^xsd:dateTime ;
+                        dpv:hasRight eu-gdpr:A20 ;
+                        dpv:hasStatus dpv:RequestAcknowledged ;
+                        dcat:resource ex:portabilityRequest, ex:portabilityAcknowledged .
+                    
+                    ex:request-002-series a dcat:DatasetSeries ;
+                        dcat:first ex:portabilityRequest ;
+                        dcat:last ex:portabilityAcknowledged .
+                </pre>
+            </div>
+        </aside>
+    </section>
+
+    <section id="execution-odrl">
+        <h2>Automating the execution of GDPR-related rights requests with policies</h2>
+        <p>
+            This section outlines how to use DPV and the Open Digital Rights Language (ODRL) for data subjects 
+            to send GDPR-related right requests in a machine-interpretable format to data controllers, which can 
+            integrate an automated response in their rights management processes to easily reply to data subjects.
+            For instance, systems implementing an ODRL evaluator according to the
+            <a href="https://w3c.github.io/odrl/formal-semantics/" target="_blank">formal semantics of ODRL</a>
+            can evaluate policies in order to understand which ones are active, have been violated or fulfiled, and 
+            act accordingly in a constant, interoperable manner.
+        </p>
+        <div class="issue" title="Machine-readable requests to execute rights">
+            See related issue at
+            <a href="https://github.com/w3c/dpv/issues/4" target="_blank">https://github.com/w3c/dpv/issues/4</a>.
+        </div>
+        <p>
+            GDPR's data subject rights described in Articles 15 to 22 can be instantiated as ODRL policies containing
+            permissions, prohibitions and obligations to data controllers to act upon or fulfil.
+        </p>
+        <div class="note" title="Policies for GDPR rights in Articles 15 to 22">
+            See generic instances of modelled rights at
+            <a href="./examples/DSR-requests/" target="_blank">https://github.com/besteves4/dpv-rights-exercising</a>.
+        </div>
+
+        <h3>Right of access</h3>
+        <p>
+            In particular, GDPR's right of access can be interpreted as a duty to the data controller to provide a 
+            copy of the data subject's personal data, as well as a notice with information about the purpose(s) to which
+            it is being used, recipients to which the data has been disclosed, and so on.
+        </p>
+        <aside class="example" id="access-policy" title="Request policy to exercise GDPR right of access">
+            <p>
+                Example of a request sent in by Alice to have access to her personal data according to GDPR's Article 15.
+                Alice's right to get a copy of her data is modelled as a duty to the data controller, i.e., 
+                <code> ex:alice-access-data</code>, where Alice is the recipient of the data. As Article 15 also expresses 
+                that Alice must have confirmation about the processing of her data, a second obligation, i.e., 
+                <code>ex:alice-access-notice</code>, is included for the data controller to inform Alice about such processing, 
+                which is described in a <code>eu-gdpr:SARNotice</code>.
+            </p>
+            <div>
+                <pre class="nohighlight">
+                    ex:alice-access a odrl:Request ;
+                        odrl:uid "1234-5678-9012-3456-7890"^^xsd:string ;
+                        dpv:hasRight eu-gdpr:A15 ;
+                        dcterms:description "Alice requests access to her data processed by HCP X." ;
+                        odrl:obligation ex:alice-access-data ;
+                        odrl:obligation ex:alice-access-notice .
+
+                    ex:alice-access-data a odrl:Duty ;
+                        odrl:action [
+                            rdf:value odrl:reproduce ;
+                            # or using the OAC profile (https://w3id.org/oac): rdf:value oac:Access ;
+                            # or using directly DPV (not following best practices though): rdf:value dpv:Access ;
+                            odrl:refinement ex:copy-recipient
+                        ] ;
+                        odrl:target ex:alice-data ;
+                        odrl:assigner ex:alice ;
+                        odrl:assignee ex:HCPx .
+
+                    ex:copy-recipient a odrl:Constraint ;
+                        odrl:leftOperand odrl:recipient ;
+                        odrl:operator odrl:eq ;
+                        odrl:rightOperand ex:alice .
+
+                    ex:alice-access-notice a odrl:Duty ;
+                        odrl:action odrl:inform ;
+                        odrl:informedParty ex:alice ;
+                        odrl:informingParty ex:HCPx ;
+                        odrl:target ex:alice-SARNotice .
+
+                    ex:alice a dpv:DataSubject .
+                    ex:alice-data a dpv:PersonalData ;
+                        dpv:hasDataSubject ex:alice .
+                    ex:HCPx a dpv:DataController .
+                    ex:alice-SARNotice a eu-gdpr:SARNotice .
+                </pre>
+            </div>
+        </aside>
+        <p>
+            ODRL policies also allow restrictions in the scope of the right: let's say that the data subject only wishes to
+            have access to a certain type of data or to all data that has been processed for only a particular purpose - these
+            restrictions can be modelled with a <a href="http://www.w3.org/ns/odrl/2/Constraint" target="_blank">odrl:Constraint</a>.
+        </p>
+        <aside class="example" id="purpose-access-policy" title="Request policy to have access to her personal data being processed for service provision">
+            <p>
+                Example of a request sent in by Alice to have access to her personal data being processed for service provision, 
+                i.e., <code>dpv:ServiceProvision</code>, according to GDPR's Article 15.
+            </p>
+            <div>
+                <pre class="nohighlight">
+                    ex:alice-access a odrl:Request ;
+                        odrl:uid "1234-5678-9012-3456-7890"^^xsd:string ;
+                        dpv:hasRight eu-gdpr:A15 ;
+                        dcterms:description "Alice requests access to her data processed by HCP X for service provision." ;
+                        odrl:obligation ex:alice-access-data ;
+                        odrl:obligation ex:alice-access-notice .
+
+                    ex:alice-access-data a odrl:Duty ;
+                        odrl:action [
+                            rdf:value odrl:reproduce ;
+                            odrl:refinement ex:copy-recipient
+                        ] ;
+                        odrl:target ex:alice-data ;
+                        odrl:assigner ex:alice ;
+                        odrl:assignee ex:HCPx ;
+                        odr:constraint ex:purpose .
+
+                    ex:purpose a odrl:Constraint ;
+                        odrl:leftOperand odrl:purpose ;
+                        odrl:operator odrl:isA ;
+                        odrl:rightOperand dpv:ServiceProvision .
+                </pre>
+            </div>
+        </aside>
+
+        <h3>Right to rectification</h3>
+        <p>
+            GDPR's right to rectification can be modelled as a permission to use the corrected data with the duty to delete
+            the data that is incorrect. Moreover, according to Article 19, if the data has been disclosed to recipients, 
+            the data controller has the duty to inform the data subject about said recipients.
+        </p>
+        <aside class="example" id="rectify-policy" title="Request policy to exercise GDPR right to rectification">
+            <p>
+                Example of a request sent in by Alice to have her personal data corrected according to GDPR's Article 16.
+                Alice's right to rectification is modelled as a permission to the data controller, i.e., 
+                <code>ex:alice-correct-data</code>, with a duty to delete the incorrect data, i.e., <code>ex:alice-delete-data</code>. 
+                An obligation to inform the data subject about recipients to which the data has been disclosed, i.e., 
+                <code>ex:alice-rectify-recipients</code> is also included.
+            </p>
+            <div>
+                <pre class="nohighlight">
+                    ex:alice-rectify a odrl:Request ;
+                        odrl:uid "7890-1234-5678-9012-3456"^^xsd:string ;
+                        dcterms:description "Alice requests HCP X to rectify her data." ;
+                        odrl:permission ex:alice-correct-data ;
+                        odrl:obligation ex:alice-rectify-recipients .
+
+                    ex:alice-correct-data a odrl:Permission ;
+                        dpv:hasRight eu-gdpr:A16 ;
+                        odrl:action odrl:use ;
+                        odrl:target ex:alice-data-corrected ;
+                        odrl:assigner ex:alice ;
+                        odrl:assignee ex:HCPx ;
+                        odrl:duty ex:alice-delete-data .
+
+                    ex:alice-delete-data a odrl:Duty ;
+                        odrl:action odrl:delete ;
+                        odrl:target ex:alice-data ;
+                        odrl:assigner ex:alice ;
+                        odrl:assignee ex:HCPx .
+
+                    ex:alice-rectify-recipients a odrl:Duty ;
+                        dpv:hasRight eu-gdpr:A19 ;
+                        odrl:action odrl:inform ;
+                        odrl:informedParty ex:alice ;
+                        odrl:informingParty ex:HCPx ;
+                        odrl:target ex:alice-RightsRecipientsNotice .
+
+                    ex:alice-data-corrected a dpv:PersonalData ;
+                        dpv:hasDataSubject ex:alice .
+                    ex:alice-RightsRecipientsNotice a eu-gdpr:RightsRecipientsNotice .
+                </pre>
+            </div>
+        </aside>
+
+        <h3>Right to erasure</h3>
+        <p>
+            GDPR's right to erasure can be modelled as an obligation to delete the personal data of the data subject,
+            on one of the grounds established in Article 17.1. Such grounds can be expressed using DPV's
+            <a href="https://w3id.org/dpv/justifications" target="_blank">Justification</a> concepts.
+            Moreover, according to Article 19, if the data has been disclosed to recipients, 
+            the data controller has the duty to inform the data subject about said recipients.
+        </p>
+        <aside class="example" id="delete-policy" title="Request policy to exercise GDPR right to erasure">
+            <p>
+                Example of a request sent in by Alice to have her personal data deleted according to GDPR's Article 17.
+                Alice bases her request on the ground that the data is no longer necessary in relation to the purposes for which 
+                it was processed, i.e., <code>justifications:NonNecessityObjection</code>.
+            </p>
+            <div>
+                <pre class="nohighlight">
+                    ex:alice-delete a odrl:Request ;
+                        odrl:uid "3456-7890-1234-5678-9012"^^xsd:string ;
+                        dcterms:description "Alice requests HCP X to delete her data." ;
+                        odrl:obligation ex:alice-delete-data ;
+                        odrl:obligation ex:alice-delete-notice .
+
+                    ex:alice-delete-data a odrl:Duty ;
+                        dpv:hasRight eu-gdpr:A17 ;
+                        odrl:action [
+                            rdf:value odrl:delete ;
+                            odrl:refinement ex:alice-delete-justification
+                        ] ;
+                        odrl:target ex:alice-data ;
+                        odrl:assigner ex:alice ;
+                        odrl:assignee ex:HCPx .
+
+                    ex:alice-delete-justification a odrl:Constraint ;
+                        odrl:leftOperand dpv:Justification ;
+                        odrl:operator odrl:eq ;
+                        odrl:rightOperand justifications:NonNecessityObjection .
+
+                    ex:alice-delete-notice a odrl:Duty ;
+                        dpv:hasRight eu-gdpr:A19 ;
+                        odrl:action odrl:inform ;
+                        odrl:informedParty ex:alice ;
+                        odrl:informingParty ex:HCPx ;
+                        odrl:target ex:alice-RightsRecipientsNotice .
+                </pre>
+            </div>
+        </aside>
+
+        <h3>Right to restriction of processing</h3>
+        <p>
+            GDPR's right to restriction of processing can be modelled as a prohibition to further process the personal data 
+            of the data subject, on one of the grounds established in Article 18.1. Such grounds can be expressed using DPV's
+            <a href="https://w3id.org/dpv/justifications" target="_blank">Justification</a> concepts.
+            Moreover, according to Article 19, if the data has been disclosed to recipients, 
+            the data controller has the duty to inform the data subject about said recipients.
+        </p>
+        <aside class="example" id="restrict-policy" title="Request policy to exercise GDPR right to restriction of processing">
+            <p>
+                Example of a request sent in by Alice for the data controller to restrict the processing of her personal data
+                according to GDPR's Article 18. Alice bases her request on the ground that the data is not accurate, i.e., 
+                <code>justifications:ContestAccuracy</code>.
+            </p>
+            <div>
+                <pre class="nohighlight">
+                    ex:alice-restrict a odrl:Request ;
+                        odrl:uid "9012-3456-7890-1234-5678"^^xsd:string ;
+                        dcterms:description "Alice requests HCP X to stop processing her data." ;
+                        odrl:prohibition ex:alice-restrict-data ;
+                        odrl:obligation ex:alice-restrict-notice .
+
+                    ex:alice-restrict-data a odrl:Prohibition ;
+                        dpv:hasRight eu-gdpr:A18 ;
+                        odrl:action [
+                            rdf:value odrl:use ;
+                            odrl:refinement ex:alice-restrict-justification
+                        ] ;
+                        odrl:target ex:alice-data ;
+                        odrl:assigner ex:alice ;
+                        odrl:assignee ex:HCPx .
+
+                    ex:alice-restrict-justification a odrl:Constraint ;
+                        odrl:leftOperand dpv:Justification ;
+                        odrl:operator odrl:eq ;
+                        odrl:rightOperand justifications:ContestAccuracy .
+
+                    ex:alice-restrict-notice a odrl:Duty ;
+                        dpv:hasRight eu-gdpr:A19 ;
+                        odrl:action odrl:inform ;
+                        odrl:informedParty ex:alice ;
+                        odrl:informingParty ex:HCPx ;
+                        odrl:target ex:alice-RightsRecipientsNotice .
+                </pre>
+            </div>
+        </aside>
+
+        <h3>Right to data portability</h3>
+        <p>
+            GDPR's right to data portability can be modelled as an obligation to the data controller to send the personal data 
+            of the data subject upon request, which can be constrained to be in a certain format.
+            The data subject can also request the data to be transmitted directly to another controller - this can be modelled
+            as an obligation as well, where the data controller has the obligation send the data to another data controller, which
+            is modelled as the recipient of the rule.
+        </p>
+        <aside class="example" id="portability-policy" title="Request policy to exercise GDPR right to data portability">
+            <p>
+                Example of a data portability request sent in by Alice according to GDPR's Article 20. 
+                Alice wishes to receive her data in CSV format, as modelled in the <code>odrl:fileFormat</code> constraint.
+                Furthermore, Alice wishes her data to be transmitted by the data controller <code>ex:HCPx</code> to the 
+                data controller <code>ex:HCPy</code>, as modelled in the duty <code>ex:transmit</code>.
+            </p>
+            <div>
+                <pre class="nohighlight">
+                    ex:alice-portability a odrl:Request ;
+                        odrl:uid "0987-6543-2109-8765-4321"^^xsd:string ;
+                        dpv:hasRight eu-gdpr:A20 ;
+                        dcterms:description "Alice requests HCP X to receive her data in CSV format and for HCP X to transmit it to HCP Y." ;
+                        odrl:obligation ex:receive ;
+                        odrl:obligation ex:transmit .
+                    
+                    ex:receive a odrl:Duty ;
+                        odrl:action [
+                            rdf:value odrl:reproduce ;
+                            odrl:refinement ex:receive-recipient, ex:receive-format
+                        ] ;
+                        odrl:target ex:alice-data ;
+                        odrl:assigner ex:alice ;
+                        odrl:assignee ex:HCPx .
+                    
+                    ex:receive-recipient a odrl:Constraint ;
+                        odrl:leftOperand odrl:recipient ;
+                        odrl:operator odrl:eq ;
+                        odrl:rightOperand ex:alice .
+                    
+                    ex:receive-format a odrl:Constraint ;
+                        odrl:leftOperand odrl:fileFormat ;
+                        odrl:operator odrl:eq ;
+                        odrl:rightOperand &#60;https://www.iana.org/assignments/media-types/text/csv> .
+                    
+                    ex:transmit a odrl:Duty ;
+                        odrl:action [
+                            rdf:value odrl:reproduce ;
+                            odrl:refinement ex:transmit-recipient
+                        ] ;
+                        odrl:target ex:alice-data ;
+                        odrl:assigner ex:alice ;
+                        odrl:assignee ex:HCPx .
+                    
+                    ex:transmit-recipient a odrl:Constraint ;
+                        odrl:leftOperand odrl:recipient ;
+                        odrl:operator odrl:eq ;
+                        odrl:rightOperand ex:HCPy .
+                    
+                    ex:HCPy a dpv:DataController .
+                </pre>
+            </div>
+        </aside>
+
+        <h3>Right to object</h3>
+        <p>
+            GDPR's right to object can be modelled as an prohibition to the data controller to use the personal data 
+            of the data subject when said processing is based on legitimate or public interests described in Article 6.1(e)(f).
+            The data subject can also request the controller to stop processing personal data for direct marketing purposes - 
+            this can be modelled as an prohibition to use data with a <code>dpv:DirectMarketing</code> purpose constraint, or
+            to stop processing her data for scientific or historical research purposes or statistical purposes - again, this 
+            can be modelled as an prohibition to use data with a purpose constraint.
+            In the examples below, we express each of these rules as independent <code>odrl:Request</code> policies,
+            however if necessary they can be merged, e.g., into a single policy.
+        </p>
+        <div class="issue" title="Alignment of DPV with ODRL">
+            The usage of <a href="https://w3id.org/oac">OAC (ODRL profile for Access Control)</a> will be substituted by 
+            the work being done on aligning DPV with the ODRL information model (being maintained by the ODRL CG) 
+            towards the publication of a joint report. The following issues track this work:
+            <a href="https://github.com/w3c/dpv/issues/130" target="_blank">https://github.com/w3c/dpv/issues/130</a> and
+            <a href="https://github.com/w3c/odrl/issues/46" target="_blank">https://github.com/w3c/odrl/issues/46</a>.
+        </div>
+        <aside class="example" id="object-policy-legitimate" title="Request policy to exercise GDPR right to object on processing based on legitimate interest">
+            <p>
+                Example of a request sent in by Alice for the data controller to stop processing her data based on legitimate 
+                interest, according to GDPR's Article 21. The restriction on the legal basis can be modelled with the GDPR 
+                legal basis <code>eu-gdpr:A6-1-f</code>.
+            </p>
+            <div>
+                <pre class="nohighlight">
+                    ex:alice-object-legalbasis a odrl:Request ;
+                        odrl:profile oac: ;
+                        odrl:uid "4321-0987-6543-2109-8765"^^xsd:string ;
+                        dpv:hasRight eu-gdpr:A21 ;
+                        dcterms:description "Alice requests HCP X to stop processing her data based on legitimate interest." ;
+                        odrl:prohibition ex:object-legalbasis .
+
+                    ex:object-legalbasis a odrl:Prohibition ;
+                        odrl:action odrl:use ;
+                        odrl:target ex:alice-data ;
+                        odrl:assigner ex:alice ;
+                        odrl:assignee ex:HCPx ;
+                        odrl:constraint ex:legalbasis .
+
+                    ex:legalbasis a odrl:Constraint ;
+                        odrl:leftOperand oac:LegalBasis ;
+                        odrl:operator odrl:eq ;
+                        odrl:rightOperand eu-gdpr:A6-1-f .
+                </pre>
+            </div>
+        </aside>
+        <aside class="example" id="object-policy-marketing" title="Request policy to exercise GDPR right to object on processing for direct marketing purposes">
+            <p>
+                Example of a request sent in by Alice for the data controller to stop processing her data for direct marketing 
+                purposes, according to GDPR's Article 21. The restriction on the purpose can be modelled with 
+                <code>dpv:DirectMarketing</code>.
+            </p>
+            <div>
+                <pre class="nohighlight">
+                    ex:alice-object-marketing a odrl:Request ;
+                        odrl:profile oac: ;
+                        odrl:uid "8765-4321-0987-6543-2109"^^xsd:string ;
+                        dpv:hasRight eu-gdpr:A21 ;
+                        dcterms:description "Alice requests HCP X to stop processing her data for direct marketing purposes." ;
+                        odrl:prohibition ex:object-marketing .
+
+                    ex:object-marketing a odrl:Prohibition ;
+                        odrl:action odrl:use ;
+                        odrl:target ex:alice-data ;
+                        odrl:assigner ex:alice ;
+                        odrl:assignee ex:HCPx ;
+                        odrl:constraint ex:purpose .
+
+                    ex:purpose a odrl:Constraint ;
+                        odrl:leftOperand oac:Purpose ;
+                        odrl:operator odrl:isA ;
+                        odrl:rightOperand dpv:DirectMarketing .
+                </pre>
+            </div>
+        </aside>
+        <aside class="example" id="object-policy-research" title="Request policy to exercise GDPR right to object on processing for scientific or historical research purposes or statistical purposes">
+            <p>
+                Example of a request sent in by Alice for the data controller to stop processing her data for scientific 
+                or historical research purposes or statistical purposes, according to GDPR's Article 21. 
+                The restriction on the purposes can be modelled with <code>dpv:ProvideOfficialStatistics</code> and
+                <code>dpv:ScientificResearch</code>.
+            </p>
+            <div>
+                <pre class="nohighlight">
+                    ex:alice-object-research a odrl:Request ;
+                        odrl:profile oac: ;
+                        odrl:uid "2109-8765-4321-0987-6543"^^xsd:string ;
+                        dpv:hasRight eu-gdpr:A21 ;
+                        dcterms:description "Alice requests HCP X to stop processing her data for scientific or historical research purposes or statistical purposes." ;
+                        odrl:prohibition ex:object-research .
+
+                    ex:object-research a odrl:Prohibition ;
+                        odrl:action odrl:use ;
+                        odrl:target ex:alice-data ;
+                        odrl:assigner ex:alice ;
+                        odrl:assignee ex:HCPx ;
+                        odrl:constraint ex:purpose-research .
+
+                    ex:purpose-research a odrl:Constraint ;
+                        odrl:leftOperand oac:Purpose ;
+                        odrl:operator odrl:isAnyOf ;
+                        odrl:rightOperand dpv:ProvideOfficialStatistics, dpv:ScientificResearch .
+                </pre>
+            </div>
+        </aside>
+        <div class="issue" title="Modelling historical research as a purpose">
+            Currently, DPV does not include a purpose term for historical research.
+        </div>
+
+        <h3>Right not to be subject to a decision based solely on automated processing</h3>
+        <p>
+            GDPR's right not to be subject to a decision based solely on automated processing, including profiling, 
+            can be modelled as a prohibition to use personal data when the processing context, i.e., dpv:ProcessingContext,
+            is based on automated decision-making, i.e., <code>dpv:AutomatedDecisionMaking</code>.
+        </p>
+        <aside class="example" id="portability-policy" title="Request policy to exercise GDPR right to data portability">
+            <p>
+                Example of a request sent in by Alice for the data controller to stop processing her data based solely 
+                on automated processing, according to GDPR's Article 22. 
+                The restriction on the processing context can be modelled with <code>dpv:AutomatedDecisionMaking</code>.
+            </p>
+            <div>
+                <pre class="nohighlight">
+                    ex:alice-object-automation a odrl:Request ;
+                        odrl:uid "6543-2109-8765-4321-0987"^^xsd:string ;
+                        dpv:hasRight eu-gdpr:A22 ;
+                        dcterms:description "Alice requests HCP X to stop processing her data based solely on automated processing." ;
+                        odrl:prohibition ex:object-automation .
+
+                    ex:object-automation a odrl:Prohibition ;
+                        odrl:action [
+                            rdf:value odrl:use ;
+                            odrl:refinement ex:processing-context
+                        ] ;
+                        odrl:target ex:alice-data ;
+                        odrl:assigner ex:alice ;
+                        odrl:assignee ex:HCPx .
+
+                    ex:processing-context a odrl:Constraint ;
+                        odrl:leftOperand dpv:ProcessingContext ;
+                        odrl:operator odrl:isA ;
+                        odrl:rightOperand dpv:AutomatedDecisionMaking .
                 </pre>
             </div>
         </aside>
